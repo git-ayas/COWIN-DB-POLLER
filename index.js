@@ -4,10 +4,10 @@ var fs = require('fs');
 const { exec } = require("child_process");
 
 
-const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJjY2NiZTIyMC1mNGY2LTQ2ZjEtOWY4Zi02N2U3ZWY3N2JlM2QiLCJ1c2VyX2lkIjoiY2NjYmUyMjAtZjRmNi00NmYxLTlmOGYtNjdlN2VmNzdiZTNkIiwidXNlcl90eXBlIjoiQkVORUZJQ0lBUlkiLCJtb2JpbGVfbnVtYmVyIjo3MjU5NjE5MDI5LCJiZW5lZmljaWFyeV9yZWZlcmVuY2VfaWQiOjQ2NTI2MTQxMDEwOTkwLCJzZWNyZXRfa2V5IjoiYjVjYWIxNjctNzk3Ny00ZGYxLTgwMjctYTYzYWExNDRmMDRlIiwidWEiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvOTAuMC40NDMwLjg1IFNhZmFyaS81MzcuMzYgRWRnLzkwLjAuODE4LjQ2IiwiZGF0ZV9tb2RpZmllZCI6IjIwMjEtMDUtMDlUMTc6MzA6MTguMDY4WiIsImlhdCI6MTYyMDU4MTQxOCwiZXhwIjoxNjIwNTgyMzE4fQ.mTTgHRrZa83DCplwQv13QyVDRvbdhY36MOV-SCLD62c"
+const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJjY2NiZTIyMC1mNGY2LTQ2ZjEtOWY4Zi02N2U3ZWY3N2JlM2QiLCJ1c2VyX2lkIjoiY2NjYmUyMjAtZjRmNi00NmYxLTlmOGYtNjdlN2VmNzdiZTNkIiwidXNlcl90eXBlIjoiQkVORUZJQ0lBUlkiLCJtb2JpbGVfbnVtYmVyIjo3MjU5NjE5MDI5LCJiZW5lZmljaWFyeV9yZWZlcmVuY2VfaWQiOjQ2NTI2MTQxMDEwOTkwLCJzZWNyZXRfa2V5IjoiYjVjYWIxNjctNzk3Ny00ZGYxLTgwMjctYTYzYWExNDRmMDRlIiwidWEiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvOTAuMC40NDMwLjg1IFNhZmFyaS81MzcuMzYgRWRnLzkwLjAuODE4LjQ2IiwiZGF0ZV9tb2RpZmllZCI6IjIwMjEtMDUtMDlUMTg6MDc6MjguODQ3WiIsImlhdCI6MTYyMDU4MzY0OCwiZXhwIjoxNjIwNTg0NTQ4fQ.xDdejLfisztrigj9oQJp8oo8ogYAJMBh10lY8P92oII"
 const timeout = 10000
-const DistrictIds= [294,265]
-const main = (DistrictId=294) => {
+const DistrictIds = [294, 265]
+const main = (DistrictId = 294) => {
 
   const currentDate = new Date()
 
@@ -85,30 +85,12 @@ const main = (DistrictId=294) => {
       console.log(`%c[18+ Slots]: ${below45.length}`, `color: ${below45.length > 0 ? "lightgreen" : "red"}`);
 
       if (AvailableCenters.length > 0) {
-        // convert JSON object to string
-        const data = esformatter.format(JSON.stringify(AvailableCenters));
-
-        // write JSON string to a file
-        fs.writeFile('available_hospitals.json', data, (err) => {
-          if (err) {
-            throw err;
-          }
-          console.log("JSON data is saved.");
-        });
+        writeData(DistrictId+'_available_hospitals.json', AvailableCenters)
       }
 
       if (below45.length > 0) {
         sing()
-        // convert JSON object to string
-        const data = esformatter.format(JSON.stringify(below45));
-
-        // write JSON string to a file
-        fs.writeFile('18plus_hospitals.json', data, (err) => {
-          if (err) {
-            throw err;
-          }
-          console.log("JSON data is saved.");
-        });
+        writeData(DistrictId+'_18plus_hospitals.json', below45)
       }
     });
 
@@ -120,8 +102,20 @@ const main = (DistrictId=294) => {
   req.end();
 
 }
-const mainLoop = ()=>{
-  DistrictIds.forEach((id)=>main(id))
+const writeData = (fileName, data) => {
+  // convert JSON object to string
+  const dataString = esformatter.format(JSON.stringify(data));
+
+  // write JSON string to a file
+  fs.writeFile(fileName, dataString, (err) => {
+    if (err) {
+      throw err;
+    }
+    console.log("JSON data is saved.");
+  });
+}
+const mainLoop = () => {
+  DistrictIds.forEach((id) => main(id))
 }
 mainLoop()
 const intervalCall = setInterval(mainLoop, timeout)
