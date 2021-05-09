@@ -4,10 +4,10 @@ var fs = require('fs');
 const { exec } = require("child_process");
 
 
-const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJjY2NiZTIyMC1mNGY2LTQ2ZjEtOWY4Zi02N2U3ZWY3N2JlM2QiLCJ1c2VyX2lkIjoiY2NjYmUyMjAtZjRmNi00NmYxLTlmOGYtNjdlN2VmNzdiZTNkIiwidXNlcl90eXBlIjoiQkVORUZJQ0lBUlkiLCJtb2JpbGVfbnVtYmVyIjo3MjU5NjE5MDI5LCJiZW5lZmljaWFyeV9yZWZlcmVuY2VfaWQiOjQ2NTI2MTQxMDEwOTkwLCJzZWNyZXRfa2V5IjoiYjVjYWIxNjctNzk3Ny00ZGYxLTgwMjctYTYzYWExNDRmMDRlIiwidWEiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvOTAuMC40NDMwLjg1IFNhZmFyaS81MzcuMzYgRWRnLzkwLjAuODE4LjQ2IiwiZGF0ZV9tb2RpZmllZCI6IjIwMjEtMDUtMDlUMTU6NDc6MzAuODEzWiIsImlhdCI6MTYyMDU3NTI1MCwiZXhwIjoxNjIwNTc2MTUwfQ.-iv3H9f4f6G-1pPBCLGx9qmU6b0WafX5wQ90qCruk2U"
-const timeout = 30000
-const DistrictId = 294
-const main = () => {
+const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJjY2NiZTIyMC1mNGY2LTQ2ZjEtOWY4Zi02N2U3ZWY3N2JlM2QiLCJ1c2VyX2lkIjoiY2NjYmUyMjAtZjRmNi00NmYxLTlmOGYtNjdlN2VmNzdiZTNkIiwidXNlcl90eXBlIjoiQkVORUZJQ0lBUlkiLCJtb2JpbGVfbnVtYmVyIjo3MjU5NjE5MDI5LCJiZW5lZmljaWFyeV9yZWZlcmVuY2VfaWQiOjQ2NTI2MTQxMDEwOTkwLCJzZWNyZXRfa2V5IjoiYjVjYWIxNjctNzk3Ny00ZGYxLTgwMjctYTYzYWExNDRmMDRlIiwidWEiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvOTAuMC40NDMwLjg1IFNhZmFyaS81MzcuMzYgRWRnLzkwLjAuODE4LjQ2IiwiZGF0ZV9tb2RpZmllZCI6IjIwMjEtMDUtMDlUMTc6MzA6MTguMDY4WiIsImlhdCI6MTYyMDU4MTQxOCwiZXhwIjoxNjIwNTgyMzE4fQ.mTTgHRrZa83DCplwQv13QyVDRvbdhY36MOV-SCLD62c"
+const timeout = 10000
+const DistrictIds= [294,265]
+const main = (DistrictId=294) => {
 
   const currentDate = new Date()
 
@@ -120,8 +120,11 @@ const main = () => {
   req.end();
 
 }
-main()
-const intervalCall = setInterval(main, timeout)
+const mainLoop = ()=>{
+  DistrictIds.forEach((id)=>main(id))
+}
+mainLoop()
+const intervalCall = setInterval(mainLoop, timeout)
 const exit = (found = false) => {
   if (!found) console.error("Authorization Expired")
   else {
