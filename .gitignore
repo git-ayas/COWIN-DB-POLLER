@@ -1,0 +1,4 @@
+.vscode/*
+node_modules/*
+available_hospitals.json
+18plus_hospitals.json
