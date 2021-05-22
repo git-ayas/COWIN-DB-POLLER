@@ -2,11 +2,12 @@ var https = require('follow-redirects').https;
 var esformatter = require('esformatter');
 var fs = require('fs');
 const { exec } = require("child_process");
+var config = require( "./config");
 
-
-const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJjY2NiZTIyMC1mNGY2LTQ2ZjEtOWY4Zi02N2U3ZWY3N2JlM2QiLCJ1c2VyX2lkIjoiY2NjYmUyMjAtZjRmNi00NmYxLTlmOGYtNjdlN2VmNzdiZTNkIiwidXNlcl90eXBlIjoiQkVORUZJQ0lBUlkiLCJtb2JpbGVfbnVtYmVyIjo3MjU5NjE5MDI5LCJiZW5lZmljaWFyeV9yZWZlcmVuY2VfaWQiOjQ2NTI2MTQxMDEwOTkwLCJzZWNyZXRfa2V5IjoiYjVjYWIxNjctNzk3Ny00ZGYxLTgwMjctYTYzYWExNDRmMDRlIiwidWEiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvOTAuMC40NDMwLjg1IFNhZmFyaS81MzcuMzYgRWRnLzkwLjAuODE4LjQ2IiwiZGF0ZV9tb2RpZmllZCI6IjIwMjEtMDUtMDlUMTg6MDc6MjguODQ3WiIsImlhdCI6MTYyMDU4MzY0OCwiZXhwIjoxNjIwNTg0NTQ4fQ.xDdejLfisztrigj9oQJp8oo8ogYAJMBh10lY8P92oII"
-const timeout = 10000
-const DistrictIds = [294, 265]
+const accessToken = config.accessToken
+const timeout = config.timeout
+const DistrictIds = config.districts
+exec(config.cleanupScript)
 const main = (DistrictId = 294) => {
 
   const currentDate = new Date()
@@ -85,12 +86,13 @@ const main = (DistrictId = 294) => {
       console.log(`%c[18+ Slots]: ${below45.length}`, `color: ${below45.length > 0 ? "lightgreen" : "red"}`);
 
       if (AvailableCenters.length > 0) {
-        writeData(DistrictId+'_available_hospitals.json', AvailableCenters)
+        writeData(DistrictId + '_available_hospitals.json', AvailableCenters)
       }
 
       if (below45.length > 0) {
         sing()
-        writeData(DistrictId+'_18plus_hospitals.json', below45)
+        writeData(DistrictId + '_18plus_hospitals.json', below45)
+        exit(true)
       }
     });
 
@@ -127,17 +129,21 @@ const exit = (found = false) => {
   }
   clearInterval(intervalCall)
 }
+let sang = false
 const sing = () => {
-  exec("vlc .\\success.mp3", (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-  });
-
+  
+  if (!sang) {
+    exec(config.postDiscoveryScript, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+      sang = true
+    });
+  }
 }
